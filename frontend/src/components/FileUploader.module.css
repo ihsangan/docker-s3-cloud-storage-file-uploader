@@ -1,0 +1,100 @@
+.uploaderContainer {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fdfdfd;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.fileInputLabel {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.fileInputContainer {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.fileInputContainer:hover {
+    border-color: #007bff;
+    background-color: #f1f1f1;
+}
+
+.fileInput {
+  /* Sembunyikan input asli, kita akan style container-nya */
+  display: none;
+}
+
+.fileNameDisplay {
+    margin-top: 10px;
+    font-style: italic;
+    color: #555;
+}
+
+.turnstileWidget {
+  margin: 15px auto; /* Pusatkan widget */
+  min-height: 65px; /* Beri ruang untuk widget Turnstile */
+}
+
+.submitButton {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.submitButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.messageArea {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
+
+.successMessage {
+  background-color: #e6ffed;
+  border: 1px solid #5cb85c;
+  color: #3c763d;
+}
+
+.errorMessage {
+  background-color: #f2dede;
+  border: 1px solid #d9534f;
+  color: #a94442;
+}
+
+.uploading {
+  font-style: italic;
+  color: #007bff;
+}
+
+.fileLink {
+    color: #007bff;
+    text-decoration: none;
+}
+.fileLink:hover {
+    text-decoration: underline;
+}
