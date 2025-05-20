@@ -7,23 +7,19 @@ import path from 'path';
 
 const router = Router();
 
-// Konfigurasi Multer (simpan file di memori sementara)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 router.post('/', upload.single('file'), async (req, res) => {
     const file = req.file;
-    const turnstileToken = req.body['cf-turnstile-response']; // Nama field default dari Turnstile
-
+    const turnstileToken = req.body['cf-turnstile-response'];
     if (!file) {
         return res.status(400).json({ success: false, message: 'No file uploaded.' });
     }
-
     if (!turnstileToken) {
         return res.status(400).json({ success: false, message: 'CAPTCHA token is missing.' });
     }
 
-    // 1. Verifikasi Cloudflare Turnstile Token
     try {
         const verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
         const formData = new URLSearchParams();
@@ -50,18 +46,17 @@ router.post('/', upload.single('file'), async (req, res) => {
         return res.status(500).json({ success: false, message: 'Error verifying CAPTCHA.' });
     }
 
-    // 2. Unggah file ke GCS
     const s3Client = new S3Client({
-      endpoint: process.env.GCS_S3_ENDPOINT,
-      region: process.env.GCS_REGION || 'auto',
+      endpoint: process.env.S3_ENDPOINT,
+      region: process.env.S3_REGION || 'auto',
       credentials: {
-        accessKeyId: process.env.GCS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.GCS_SECRET_ACCESS_KEY,
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECRET_KEY,
       },
     });
     const fileName = `${dayjs().format('YYYYMMDD')}/${crypto.randomUUID()}${path.extname(file.originalname)}`;
     const params = {
-        Bucket: process.env.GCS_BUCKET_NAME,
+        Bucket: process.env.S3_BUCKET_NAME,
         Key: fileName,
         Body: file.buffer,
         ContentType: file.mimetype,
@@ -71,10 +66,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     try {
         const command = new PutObjectCommand(params);
         await s3Client.send(command);
-
-        // GCS URL format (bisa berbeda tergantung konfigurasi bucket & object ACL)
-        // Untuk objek yang tidak publik, Anda perlu generate signed URL
-        const fileUrl = `${process.env.GCS_S3_ENDPOINT}/${process.env.GCS_BUCKET_NAME}/${fileName}`;
+        const fileUrl = `${process.env.S3_ENDPOINT}/${process.env.S3_BUCKET_NAME}/${fileName}`;
 
         res.status(200).json({
             success: true,
