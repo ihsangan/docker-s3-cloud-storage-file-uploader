@@ -12,7 +12,8 @@ FROM base AS production-runner
 WORKDIR /app/backend
 RUN npm i -g corepack@latest && corepack enable pnpm
 COPY backend/package.json backend/pnpm-lock.yaml ./
-RUN pnpm i && pnpm build
+RUN pnpm i
+RUN pnpm build
 COPY backend/dist ./src
 COPY --from=frontend-builder /app/frontend/dist ./public
 ENV NODE_ENV=production
