@@ -13,7 +13,6 @@ WORKDIR /app/backend
 RUN npm i -g corepack@latest && corepack enable pnpm
 COPY backend/package.json backend/pnpm-lock.yaml ./
 RUN pnpm i
-RUN pnpm build
 COPY backend/src ./src
 COPY --from=frontend-builder /app/frontend/dist ./public
 ENV NODE_ENV=production
