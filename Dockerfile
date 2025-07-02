@@ -1,4 +1,5 @@
-FROM node:lts-alpine AS frontend-builder
+FROM node:lts-alpine AS base
+FROM base AS frontend-builder
 WORKDIR /app/frontend
 RUN npm i -g corepack@latest && corepack enable pnpm
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
@@ -7,12 +8,12 @@ RUN pnpm i
 COPY frontend ./
 RUN VITE_TURNSTILE_SITE_KEY=${TURNSTILE_SITE_KEY} pnpm build
 
-FROM node:lts-alpine AS production-runner
+FROM base AS production-runner
 WORKDIR /app/backend
 RUN npm i -g corepack@latest && corepack enable pnpm
 COPY backend/package.json backend/pnpm-lock.yaml ./
-RUN pnpm i --prod
-COPY backend/src ./src
+RUN pnpm i && pnpm build
+COPY backend/dist ./src
 COPY --from=frontend-builder /app/frontend/dist ./public
 ENV NODE_ENV=production
 ENV PORT=3300
