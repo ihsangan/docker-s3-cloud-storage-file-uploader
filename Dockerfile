@@ -1,21 +1,19 @@
-FROM node:lts-alpine AS base
+FROM oven/bun:alpine AS base
 FROM base AS frontend-builder
-WORKDIR /app/frontend
-RUN npm i -g corepack@latest && corepack enable pnpm
-COPY frontend/package.json frontend/pnpm-lock.yaml ./
-ARG TURNSTILE_SITE_KEY="1x00000000000000000000AA"
-RUN pnpm i
+WORKDIR /app
 COPY frontend ./
-RUN VITE_TURNSTILE_SITE_KEY=${TURNSTILE_SITE_KEY} pnpm build
+RUN bun install
+ARG TURNSTILE_SITE_KEY="1x00000000000000000000AA"
+RUN VITE_TURNSTILE_SITE_KEY=${TURNSTILE_SITE_KEY} bunx --bun vite build
 
-FROM base AS production-runner
+FROM node:lts-alpine AS production-runner
 WORKDIR /app/backend
 RUN npm i -g corepack@latest && corepack enable pnpm
 COPY backend/package.json backend/pnpm-lock.yaml ./
 RUN pnpm i
 COPY backend ./
 RUN pnpm build
-COPY --from=frontend-builder /app/frontend/dist ./public
+COPY --from=frontend-builder /app/dist ./public
 ENV NODE_ENV=production
 ENV PORT=3300
 ENV S3_ENDPOINT=https://storage.googleapis.com
