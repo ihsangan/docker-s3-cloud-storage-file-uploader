@@ -40,12 +40,7 @@ uploadApp.post('/', async (c) => {
     console.error('Error verifying CAPTCHA:', err)
     return c.json({ success: false, message: 'Error verifying CAPTCHA.' }, 500)
   }
-  
-  /**return c.json({
-    success: true,
-    message: 'hore'
-  }, 200)**/
-  
+
   const s3Client = new S3Client({
     endpoint: process.env.S3_ENDPOINT,
     region: process.env.S3_REGION || 'auto',
