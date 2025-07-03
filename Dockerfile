@@ -15,9 +15,9 @@ COPY --from=frontend /app/dist ./public
 ENV PORT=3300
 ENV S3_ENDPOINT=https://storage.googleapis.com
 ENV TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
-RUN bun build --compile --minify --sourcemap --outfile run --target=bun-linux-x64-musl ./src/index.ts
+RUN bun build --compile --minify --sourcemap --outfile run ./src/index.ts
 
-FROM alpine:3.20 AS server
+FROM alpine:3.20.6 AS server
 WORKDIR /app
 COPY --from=backend /app/run ./
 ENV PORT=3300
