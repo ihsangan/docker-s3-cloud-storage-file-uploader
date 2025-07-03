@@ -19,6 +19,7 @@ RUN bun build --compile --minify --sourcemap --outfile run ./src/index.ts
 
 FROM alpine:3.20.6 AS server
 WORKDIR /app
+RUN apk add --no-cache libgcc libstdc++
 COPY --from=backend /app/run ./
 ENV PORT=3300
 EXPOSE ${PORT}
