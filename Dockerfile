@@ -23,4 +23,4 @@ ENV TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 #COPY --from=backend /app/run ./
 #ENV PORT=3300
 EXPOSE ${PORT}
-CMD ["bun" "start"]
+CMD ["bun", "start"]
