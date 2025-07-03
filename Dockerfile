@@ -11,16 +11,16 @@ FROM builder AS backend
 WORKDIR /app
 COPY backend ./
 RUN bun i
-COPY --from=frontend /app/dist ./public
 ENV PORT=3300
 ENV S3_ENDPOINT=https://storage.googleapis.com
 ENV TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 RUN bun build --compile --minify --sourcemap --outfile run ./src/index.ts
 
-#FROM alpine:3.20.6 AS server
-#WORKDIR /app
+FROM alpine:3.20 AS server
+WORKDIR /app
 RUN apk add --no-cache libgcc libstdc++
-#COPY --from=backend /app/run ./
-#ENV PORT=3300
+COPY --from=frontend /app/dist ./public
+COPY --from=backend /app/run ./
+ENV PORT=3300
 EXPOSE ${PORT}
 CMD ["./run"]
