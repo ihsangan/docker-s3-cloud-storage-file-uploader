@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '',
   server: {
     // Proxy API requests ke backend server saat development
     // Ini tidak diperlukan jika VITE_API_BASE_URL diset lengkap
