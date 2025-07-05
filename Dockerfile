@@ -12,12 +12,12 @@ RUN bun i
 ENV PORT=3300
 ENV S3_ENDPOINT=https://storage.googleapis.com
 ENV TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
-COPY --from=frontend /app/dist ./public
-RUN bun build --compile --minify --sourcemap ./src/index.ts ./public/index.html --outfile run
+RUN bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile run
 FROM alpine:3.20 AS server
 WORKDIR /app
 RUN apk add --no-cache libgcc libstdc++
 COPY --from=backend /app/run ./
+COPY --from=frontend /app/dist ./public
 ENV PORT=3300
 EXPOSE ${PORT}
 CMD ["./run"]
