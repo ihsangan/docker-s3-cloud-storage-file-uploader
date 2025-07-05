@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import styles from './FileUploader.module.css'; // Import CSS Module
+import styles from './FileUploader.module.css';
 
-// Deklarasikan window.turnstile untuk TypeScript
 declare global {
     interface Window {
         turnstile?: {
@@ -18,7 +17,6 @@ interface TurnstileOptions {
     callback?: (token: string) => void;
     'expired-callback'?: () => void;
     'error-callback'?: () => void;
-    // ... tambahkan properti lain jika diperlukan
 }
 
 interface UploadResponse {
@@ -81,15 +79,13 @@ function FileUploader(): React.JSX.Element {
                     console.error('Server validation errors:', data.errors);
                 }
             } else {
-                // Jika status HTTP adalah 2xx (sukses)
                 setMessage(data.message);
-                setIsError(!data.success); // Seharusnya false jika response.ok dan backend logis
+                setIsError(!data.success);
                 if (data.success && data.filePath) {
                     setUploadedFileUrl(data.filePath);
                 }
             }
         } catch (error: any) {
-            // Tangani network error atau error saat parsing JSON (misalnya jika server tidak mengirim JSON)
             setIsError(true);
             setMessage(`Network or parsing error: ${error.message || 'An unknown error occurred.'}`);
             console.error('Upload error (fetch catch block):', error);
@@ -108,7 +104,7 @@ function FileUploader(): React.JSX.Element {
 
     return (
         <div className={styles.uploaderContainer}>
-            <h2>Upload File to Google Cloud Storage</h2>
+            <h2>Upload File to Cloud Storage</h2>
             <form onSubmit={handleSubmit} className={styles.form}>
                 <label htmlFor="fileInput" className={styles.fileInputLabel}>Choose file:</label>
                 <div
@@ -119,7 +115,7 @@ function FileUploader(): React.JSX.Element {
                     <input
                         type="file"
                         id="fileInput"
-                        name="file" // Penting untuk FormData
+                        name="file"
                         onChange={handleFileChange}
                         disabled={uploading}
                         ref={fileInputRef}
