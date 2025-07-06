@@ -1,33 +1,35 @@
-import { Hono } from 'hono'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import dayjs from 'dayjs';
-import path from 'path';
+import { Hono, Context } from 'hono'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import dayjs from 'dayjs'
+import path from 'path'
 
 const uploadApp = new Hono()
 
-uploadApp.post('/', async (c) => {
-  const body = await c.req.parseBody()
-  const fdata = await c.req.formData()
-  const file = body['file']
-  const turnstileToken = body['cf-turnstile-response']
+uploadApp.post('/', async (c: Context) => {
+  const body: Record<string, any> = await c.req.parseBody()
+  const file: File | null = body['file']
+  const turnstileToken: string | undefined = body['cf-turnstile-response']
+
   if (!file || typeof file === 'string') {
     return c.json({ success: false, message: 'No file uploaded.' }, 400)
   }
+  
   if (!turnstileToken || typeof turnstileToken !== 'string') {
     return c.json({ success: false, message: 'CAPTCHA token is missing.' }, 400)
   }
-  
+
   try {
-    const formData = new FormData()
+    const formData: FormData = new FormData()
     formData.append('secret', process.env.TURNSTILE_SECRET_KEY!)
     formData.append('response', turnstileToken)
 
-    const turnstileRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    const turnstileRes: Response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       body: formData,
     })
 
-    const data = await turnstileRes.json()
+    const data: Record<string, any> = await turnstileRes.json()
+    
     if (!data.success) {
       console.error('CAPTCHA verification failed:', data['error-codes'])
       return c.json({
@@ -50,11 +52,11 @@ uploadApp.post('/', async (c) => {
     },
   })
   
-  const fileBuffer = Buffer.from(await file.arrayBuffer());
-  const fileName = `${dayjs().format('YYYYMMDD')}/${crypto.randomUUID()}${path.extname(file.name)}`
+  const fileBuffer: Buffer = Buffer.from(await file.arrayBuffer())
+  const fileName: string = `${dayjs().format('YYYYMMDD')}/${crypto.randomUUID()}${path.extname(file.name)}`
 
   const uploadParams = {
-    Bucket: process.env.S3_BUCKET_NAME,
+    Bucket: process.env.S3_BUCKET_NAME!,
     Key: fileName,
     Body: fileBuffer,
     ContentType: file.type,
@@ -62,7 +64,9 @@ uploadApp.post('/', async (c) => {
 
   try {
     await s3Client.send(new PutObjectCommand(uploadParams))
-    const fileUrl = `${process.env.S3_CUSTOM_FILE_URL || process.env.S3_ENDPOINT}/${process.env.S3_BUCKET_NAME}/${fileName}`
+    
+    const urlPrefix: string = process.env.S3_CUSTOM_FILE_URL || `${process.env.S3_ENDPOINT}/${process.env.S3_BUCKET_NAME}`
+    const fileUrl: string = `${urlPrefix}/${fileName}`
 
     return c.json({
       success: true,
@@ -70,8 +74,10 @@ uploadApp.post('/', async (c) => {
       fileName,
       filePath: fileUrl,
     }, 200)
+    
   } catch (err) {
     console.error('Error uploading to S3:', err)
+    
     return c.json({ success: false, message: 'Failed to upload.' }, 500)
   }
 })

@@ -98,3 +98,28 @@
 .fileLink:hover {
     text-decoration: underline;
 }
+
+.progressContainer {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  margin-top: 15px;
+  overflow: hidden; /* Pastikan progress bar tidak keluar dari container */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.progressBar {
+  height: 24px;
+  width: 0%; /* Mulai dari 0% */
+  background-color: #4caf50; /* Warna hijau untuk progress */
+  text-align: center;
+  line-height: 24px; /* Vertically center the text */
+  color: white;
+  font-weight: bold;
+  transition: width 0.3s ease-in-out; /* Animasi yang mulus */
+  white-space: nowrap; /* Mencegah teks turun baris */
+}
+
+.progressText {
+  padding: 0 10px; /* Beri sedikit ruang agar teks tidak menempel di tepi */
+}

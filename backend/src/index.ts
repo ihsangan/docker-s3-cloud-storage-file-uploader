@@ -1,10 +1,9 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
-import dotenv from 'dotenv'
+import from 'dotenv/config'
 import uploadApp from './upload'
 
-dotenv.config()
-const PORT = Number(process.env.PORT) || 3300
+const PORT: number = Number(process.env.PORT) || 3300
 const app = new Hono()
 
 app.route('/upload', uploadApp)
