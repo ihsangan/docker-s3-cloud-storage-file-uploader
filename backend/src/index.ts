@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
-import from 'dotenv/config'
+import 'dotenv/config'
 import uploadApp from './upload'
 
 const PORT: number = Number(process.env.PORT) || 3300
